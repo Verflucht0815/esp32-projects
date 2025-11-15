@@ -5,12 +5,14 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Bastelwelt geladen - bereit für DIY Projekte!');
     
     // TikTok Video URLs hier eintragen
-    // Format: 'https://www.tiktok.com/@username/video/1234567890'
+    // Du kannst BEIDE Formate verwenden:
+    // - Kurz-Links: 'https://vm.tiktok.com/ZNdEqKxxB/'
+    // - Lange Links: 'https://www.tiktok.com/@username/video/1234567890'
     const tiktokVideos = [
-        // Beispiel URLs - ersetze diese mit deinen echten Video-Links:
-        // 'https://www.tiktok.com/@npc0815/video/7123456789',
-        // 'https://www.tiktok.com/@npc0815/video/7234567890',
-        // 'https://www.tiktok.com/@npc0815/video/7345678901',
+        'https://vm.tiktok.com/ZNdEqKxxB/',
+        // Weitere Videos hier hinzufügen:
+        // 'https://vm.tiktok.com/ZNdEqKyyy/',
+        // 'https://vm.tiktok.com/ZNdEqKzzz/',
     ];
     
     loadTikTokVideos(tiktokVideos);
@@ -35,22 +37,19 @@ function loadTikTokVideos(videoUrls) {
     // Container leeren
     container.innerHTML = '';
     
-    // Videos laden
+    // Videos laden (auch vm.tiktok.com Links)
     videoUrls.forEach(url => {
         const videoCard = document.createElement('div');
         videoCard.className = 'video-card';
         
-        // TikTok Embed erstellen
-        const videoId = extractTikTokVideoId(url);
-        if (videoId) {
-            videoCard.innerHTML = `
-                <blockquote class="tiktok-embed" cite="${url}" data-video-id="${videoId}">
-                    <section></section>
-                </blockquote>
-            `;
-        } else {
-            videoCard.innerHTML = `<p class="placeholder-text">Ungültige Video-URL</p>`;
-        }
+        // TikTok oEmbed API verwenden für bessere Kompatibilität
+        videoCard.innerHTML = `
+            <blockquote class="tiktok-embed" cite="${url}" data-video-id="">
+                <section>
+                    <a target="_blank" href="${url}">Video ansehen auf TikTok</a>
+                </section>
+            </blockquote>
+        `;
         
         container.appendChild(videoCard);
     });
@@ -68,6 +67,10 @@ function extractTikTokVideoId(url) {
 function loadTikTokEmbedScript() {
     // Prüfen ob Script bereits geladen wurde
     if (document.getElementById('tiktok-embed-script')) {
+        // Script neu ausführen falls bereits geladen
+        if (window.tiktokEmbed) {
+            window.tiktokEmbed.lib.render(document.querySelectorAll('.tiktok-embed'));
+        }
         return;
     }
     
