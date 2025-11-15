@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // - Lange Links: 'https://www.tiktok.com/@username/video/1234567890'
     const tiktokVideos = [
         'https://vm.tiktok.com/ZNdEqKxxB/',
-        // Weitere Videos hier hinzufügen:
+        'https://www.tiktok.com/@0815npc/video/7548133060261268758?is_from_webapp=1&sender_device=pc&web_id=7573094593659782678'
         // 'https://vm.tiktok.com/ZNdEqKyyy/',
         // 'https://vm.tiktok.com/ZNdEqKzzz/',
     ];
