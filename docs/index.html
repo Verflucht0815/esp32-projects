@@ -1,129 +1,646 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ESP32 Projects - NPC0815</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <header>
-        <nav class="navbar">
-            <div class="container">
-                <div class="logo">
-                    <h1>NPC0815 Arduino & ESP32 Projekte</h1>
-                </div>
-                <ul class="nav-links">
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#projects">Projekte</a></li>
-                    <li><a href="#about">Social Media</a></li>
-                    <li><a href="#contact">Kontakt</a></li>
-                </ul>
-                <div class="burger">
-                    <div class="line1"></div>
-                    <div class="line2"></div>
-                    <div class="line3"></div>
-                </div>
-            </div>
-        </nav>
-    </header>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-    <section id="home" class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h2>Willkommen auf deinem TechHub</h2>
-                <p>Entdecke spannende IoT-Projekte und Mikrocontroller-Experimente und mehr.</p>
-                <a href="https://github.com/Verflucht0815/esp32-projects" target="_blank" class="btn">Zum GitHub Repository</a>
-            </div>
-        </div>
-    </section>
+:root {
+    --primary-color: #00d9a3;
+    --secondary-color: #00a86b;
+    --dark-bg: #0a1a14;
+    --card-bg: #12211a;
+    --text-color: #ffffff;
+    --text-secondary: #b0c8bc;
+    --accent: #50c878;
+    --border-color: rgba(0, 217, 163, 0.15);
+}
 
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--dark-bg);
+    color: var(--text-color);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
 
-    <section id="about" class="about">
-        <div class="container">
-            <h2 class="section-title">Über dieses Seite</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>Dieses Repository enthält verschiedene ESP32-Projekte, von einfachen Sensor-Experimenten bis hin zu komplexen IoT-Anwendungen.</p>
-                    <p>Der ESP32 ist ein leistungsstarker Mikrocontroller mit integriertem WiFi und Bluetooth, perfekt für IoT-Projekte.</p>
-                    <ul class="features-list">
-                        <li>✓ Open Source Code</li>
-                        <li>✓ Detaillierte Dokumentation</li>
-                        <li>✓ Schaltpläne und Tutorials</li>
-                        <li>✓ Regelmäßige Updates</li>
-                    </ul>
-                </div>
-                <div class="about-image">
-                    <div class="tech-stack">
-                        <h3>Technologien</h3>
-                        <div class="tech-badges">
-                            <span class="badge">ESP32</span>
-                            <span class="badge">Arduino IDE</span>
-                            <span class="badge">C++</span>
-                            <span class="badge">MQTT</span>
-                            <span class="badge">WiFi</span>
-                            <span class="badge">Bluetooth</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
 
-    
-    <section id="projects" class="projects">
-        <div class="container">
-            <h2 class="section-title">Meine Projekte</h2>
-            <div class="projects-grid" id="projectsGrid">
-                <!-- Projekte werden hier dynamisch eingefügt -->
-                <div class="project-card">
-                    <div class="project-icon">📡</div>
-                    <h3>Thermo/Hygrometer Projekt</h3>
-                    <p>ESP32-basierte Wetterstation mit 16x2 I2C-LCD und DHT22</p>
-                    <a href="#" class="project-link">Mehr erfahren →</a>
-                </div>
-                <div class="project-card">
-                    <div class="project-icon">💡</div>
-                    <h3>Smart Home Controller</h3>
-                    <p>Sammelt Daten der Wetterstation und Verarbeitet diese in einem Webinterface</p>
-                    <a href="#" class="project-link">Bald verfügbar →</a>
-                </div>
-                <div class="project-card">
-                    <div class="project-icon">📟</div>
-                    <h3>Tutorial Reihe "Bauteile</h3>
-                    <p>Eine Reihe Tutorials für Anfänger zum Thema "Bauteile"</p>
-                    <a href="#" class="project-link">Bald verfügbar →</a>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <section id="contact" class="contact">
-        <div class="container">
-            <h2 class="section-title">Kontakt & Links</h2>
-            <div class="contact-content">
-                <div class="contact-info">
-                    <p>Hast du Fragen oder Anregungen? Kontaktiere mich über GitHub!</p>
-                    <div class="social-links">
-                        <a href="https://github.com/Verflucht0815" target="_blank" class="social-btn">
-                            <span>🔗</span> GitHub Profil
-                        </a>
-                        <a href="https://github.com/Verflucht0815/esp32-projects/issues" target="_blank" class="social-btn">
-                            <span>🐛</span> Issues melden
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+/* Navigation */
+.navbar {
+    background: var(--card-bg);
+    padding: 1rem 0;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 2px solid var(--border-color);
+    transition: all 0.3s ease;
+}
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 Verflucht0815 | ESP32 Projects | <a href="https://github.com/Verflucht0815/esp32-projects" target="_blank">View on GitHub</a></p>
-        </div>
-    </footer>
+.navbar:hover {
+    border-bottom-color: var(--primary-color);
+    box-shadow: 0 4px 20px rgba(0, 217, 163, 0.2);
+}
 
-    <script src="script.js"></script>
-</body>
-</html>
+.navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo h1 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+}
+
+.logo h1:hover {
+    color: var(--accent);
+    text-shadow: 0 0 20px rgba(0, 217, 163, 0.5);
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+}
+
+.nav-links a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    position: relative;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.nav-links a:hover {
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    background: rgba(0, 217, 163, 0.05);
+    box-shadow: 0 0 15px rgba(0, 217, 163, 0.3);
+}
+
+.burger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 5px;
+}
+
+.burger div {
+    width: 25px;
+    height: 3px;
+    background: var(--primary-color);
+    transition: all 0.3s;
+}
+
+/* Hero Section */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--dark-bg);
+    position: relative;
+    overflow: hidden;
+    padding-top: 80px;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(0, 217, 163, 0.08) 0%, transparent 70%);
+    top: -300px;
+    right: -300px;
+    border-radius: 0;
+    clip-path: polygon(30% 0%, 100% 0%, 100% 70%, 70% 100%);
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(0, 168, 107, 0.06) 0%, transparent 70%);
+    bottom: -200px;
+    left: -200px;
+    border-radius: 0;
+    clip-path: polygon(0% 30%, 70% 0%, 100% 70%, 30% 100%);
+}
+
+.hero-content {
+    text-align: center;
+    z-index: 1;
+    padding: 3rem;
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    position: relative;
+    transition: all 0.4s ease;
+}
+
+.hero-content::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: -1;
+}
+
+.hero-content:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 10px 40px rgba(0, 217, 163, 0.3);
+    transform: translateY(-5px);
+}
+
+.hero-content:hover::before {
+    opacity: 0.1;
+}
+
+.hero-content h2 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.hero-content p {
+    font-size: 1.3rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-weight: 300;
+}
+
+.btn {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    background: var(--card-bg);
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 2px solid var(--primary-color);
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--primary-color);
+    transition: left 0.3s ease;
+    z-index: -1;
+}
+
+.btn:hover::before {
+    left: 0;
+}
+
+.btn:hover {
+    color: var(--dark-bg);
+    box-shadow: 0 5px 25px rgba(0, 217, 163, 0.4);
+    transform: translateY(-3px);
+}
+
+/* Sections */
+section {
+    padding: 3rem 0;
+}
+
+section#home {
+    padding-bottom: 1rem;
+}
+
+section#about {
+    padding-top: 2rem;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+    color: var(--primary-color);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: var(--primary-color);
+}
+
+/* Projects Grid */
+.projects {
+    background: var(--dark-bg);
+}
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.project-card {
+    background: var(--card-bg);
+    padding: 2rem;
+    transition: all 0.3s ease;
+    border: 2px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.project-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 217, 163, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.project-card:hover::before {
+    left: 100%;
+}
+
+.project-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--primary-color);
+    box-shadow: 0 15px 40px rgba(0, 217, 163, 0.25);
+}
+
+.project-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.project-card:hover .project-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.project-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.project-card p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.project-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+}
+
+.project-link:hover {
+    gap: 10px;
+    border-bottom-color: var(--primary-color);
+}
+
+/* About Section */
+.about {
+    background: var(--dark-bg);
+}
+
+.about-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+}
+
+.about-text p {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.features-list {
+    list-style: none;
+    margin-top: 2rem;
+}
+
+.features-list li {
+    padding: 0.5rem 0;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.features-list li:hover {
+    color: var(--primary-color);
+    transform: translateX(10px);
+}
+
+.tech-stack {
+    background: var(--card-bg);
+    padding: 2rem;
+    border: 2px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.tech-stack:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 10px 30px rgba(0, 217, 163, 0.2);
+}
+
+.tech-stack h3 {
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.tech-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.badge {
+    background: var(--dark-bg);
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+.badge:hover {
+    background: var(--primary-color);
+    color: var(--dark-bg);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 217, 163, 0.3);
+}
+
+/* Contact Section */
+.contact {
+    background: var(--dark-bg);
+}
+
+.contact-content {
+    text-align: center;
+}
+
+.contact-info p {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.social-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    background: var(--card-bg);
+    color: var(--primary-color);
+    text-decoration: none;
+    border: 2px solid var(--primary-color);
+    transition: all 0.3s ease;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+}
+
+.social-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--primary-color);
+    transition: left 0.3s ease;
+    z-index: 0;
+}
+
+.social-btn span,
+.social-btn:not(span) {
+    position: relative;
+    z-index: 1;
+}
+
+.social-btn:hover::before {
+    left: 0;
+}
+
+.social-btn:hover {
+    color: var(--dark-bg);
+    box-shadow: 0 8px 25px rgba(0, 217, 163, 0.3);
+    transform: translateY(-3px);
+}
+
+/* Footer */
+footer {
+    background: var(--card-bg);
+    padding: 2rem 0;
+    text-align: center;
+    border-top: 2px solid var(--border-color);
+}
+
+footer p {
+    color: var(--text-secondary);
+}
+
+footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid transparent;
+}
+
+footer a:hover {
+    border-bottom-color: var(--primary-color);
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .burger {
+        display: flex;
+    }
+
+    .logo h1 {
+        font-size: 1rem;
+    }
+
+    .nav-links {
+        position: fixed;
+        right: -100%;
+        top: 70px;
+        flex-direction: column;
+        background: var(--card-bg);
+        width: 100%;
+        text-align: center;
+        transition: right 0.3s;
+        padding: 2rem;
+        border-top: 2px solid var(--border-color);
+    }
+
+    .nav-links.active {
+        right: 0;
+    }
+
+    .hero {
+        min-height: 80vh;
+        padding-top: 100px;
+    }
+
+    .hero-content {
+        padding: 2rem 1.5rem;
+    }
+
+    .hero-content h2 {
+        font-size: 1.5rem;
+        letter-spacing: 1px;
+    }
+
+    .hero-content p {
+        font-size: 1rem;
+    }
+
+    .btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    section {
+        padding: 2rem 0;
+    }
+
+    section#home {
+        padding-bottom: 1rem;
+    }
+
+    section#about {
+        padding-top: 1.5rem;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+        margin-bottom: 2rem;
+        letter-spacing: 1px;
+    }
+
+    .about-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .about-text p {
+        font-size: 1rem;
+    }
+
+    .features-list li {
+        font-size: 1rem;
+    }
+
+    .tech-stack {
+        padding: 1.5rem;
+    }
+
+    .projects-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .project-card {
+        padding: 1.5rem;
+    }
+
+    .project-card h3 {
+        font-size: 1.2rem;
+    }
+
+    .project-icon {
+        font-size: 2.5rem;
+    }
+
+    .social-links {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .social-btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+
+    .contact-info p {
+        font-size: 1rem;
+    }
+
+    footer p {
+        font-size: 0.9rem;
+    }
+}
+
+/* Burger Animation */
+.burger.active .line1 {
+    transform: rotate(-45deg) translate(-5px, 6px);
+}
+
+.burger.active .line2 {
+    opacity: 0;
+}
+
+.burger.active .line3 {
+    transform: rotate(45deg) translate(-5px, -6px);
+}
 
