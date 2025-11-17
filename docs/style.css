@@ -1,17 +1,17 @@
-* {
+{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
 :root {
-    --primary-color: #00d9ff;
-    --secondary-color: #0066ff;
-    --dark-bg: #0a0e27;
-    --card-bg: #1a1f3a;
+    --primary-color: #00d9a3;
+    --secondary-color: #00a86b;
+    --dark-bg: #0a1a14;
+    --card-bg: #1a2f26;
     --text-color: #ffffff;
-    --text-secondary: #b0b8c8;
-    --accent: #ff6b6b;
+    --text-secondary: #b0c8bc;
+    --accent: #50c878;
 }
 
 body {
@@ -37,7 +37,7 @@ body {
     width: 100%;
     top: 0;
     z-index: 1000;
-    box-shadow: 0 2px 20px rgba(0, 217, 255, 0.1);
+    box-shadow: 0 2px 20px rgba(0, 217, 163, 0.1);
 }
 
 .navbar .container {
@@ -118,7 +118,7 @@ body {
     position: absolute;
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(0, 217, 255, 0.15) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(0, 217, 163, 0.15) 0%, transparent 70%);
     border-radius: 50%;
     top: -200px;
     right: -200px;
@@ -159,12 +159,12 @@ body {
     border-radius: 50px;
     font-weight: 600;
     transition: all 0.3s;
-    box-shadow: 0 10px 30px rgba(0, 217, 255, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 217, 163, 0.3);
 }
 
 .btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 15px 40px rgba(0, 217, 255, 0.5);
+    box-shadow: 0 15px 40px rgba(0, 217, 163, 0.5);
 }
 
 /* Sections */
@@ -207,12 +207,12 @@ section {
     border-radius: 15px;
     padding: 2rem;
     transition: all 0.3s;
-    border: 1px solid rgba(0, 217, 255, 0.1);
+    border: 1px solid rgba(0, 217, 163, 0.1);
 }
 
 .project-card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0, 217, 255, 0.2);
+    box-shadow: 0 20px 40px rgba(0, 217, 163, 0.2);
     border-color: var(--primary-color);
 }
 
@@ -279,7 +279,7 @@ section {
     background: var(--card-bg);
     padding: 2rem;
     border-radius: 15px;
-    border: 1px solid rgba(0, 217, 255, 0.1);
+    border: 1px solid rgba(0, 217, 163, 0.1);
 }
 
 .tech-stack h3 {
@@ -294,11 +294,11 @@ section {
 }
 
 .badge {
-    background: linear-gradient(135deg, rgba(0, 217, 255, 0.2), rgba(0, 102, 255, 0.2));
+    background: linear-gradient(135deg, rgba(0, 217, 163, 0.2), rgba(0, 168, 107, 0.2));
     padding: 0.5rem 1rem;
     border-radius: 25px;
     font-size: 0.9rem;
-    border: 1px solid rgba(0, 217, 255, 0.3);
+    border: 1px solid rgba(0, 217, 163, 0.3);
 }
 
 /* Contact Section */
@@ -332,12 +332,12 @@ section {
     color: var(--text-color);
     text-decoration: none;
     border-radius: 10px;
-    border: 1px solid rgba(0, 217, 255, 0.2);
+    border: 1px solid rgba(0, 217, 163, 0.2);
     transition: all 0.3s;
 }
 
 .social-btn:hover {
-    background: linear-gradient(135deg, rgba(0, 217, 255, 0.2), rgba(0, 102, 255, 0.2));
+    background: linear-gradient(135deg, rgba(0, 217, 163, 0.2), rgba(0, 168, 107, 0.2));
     border-color: var(--primary-color);
     transform: translateY(-3px);
 }
@@ -347,7 +347,7 @@ footer {
     background: var(--card-bg);
     padding: 2rem 0;
     text-align: center;
-    border-top: 1px solid rgba(0, 217, 255, 0.1);
+    border-top: 1px solid rgba(0, 217, 163, 0.1);
 }
 
 footer p {
