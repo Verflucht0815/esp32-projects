@@ -722,9 +722,16 @@ footer a:hover {
         gap: 1.5rem;
     }
 
-    .social-intro {
-        font-size: 1rem;
-        margin-bottom: 2rem;
+    .social-card {
+        padding: 1.5rem;
+    }
+
+    .social-card h3 {
+        font-size: 1.2rem;
+    }
+
+    .social-icon {
+        font-size: 2.5rem;
     }
 
     section#about {
