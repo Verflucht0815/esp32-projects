@@ -1,1 +1,85 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#include <DHT.h>
 
+// Config
+#define DHTPIN 4        
+#define DHTTYPE DHT22   
+DHT dht(DHTPIN, DHTTYPE);
+
+// LCD Config (I2C Adresse meistens 0x27 oder 0x3F)
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// Update-Intervall in Sekunden jetz 15 Sekundden
+#define UPDATE_INTERVAL 15
+
+void setup() {
+  Serial.begin(115200);
+  
+  // CPU-Frequenz reduzieren für weniger Wärme (optional)
+  setCpuFrequencyMhz(80);  // Von 240MHz auf 80MHz
+  
+  // Initialisieren
+  dht.begin();
+  lcd.init();
+  lcd.backlight();
+  
+  // Startmeldung
+  lcd.setCursor(0, 0);
+  lcd.print("Thermo-Hygro");
+  lcd.setCursor(0, 1);
+  lcd.print("Meter ESP32");
+  delay(2000);
+  lcd.clear();
+  
+  Serial.println("ESP32 Thermo-Hygrometer gestartet");
+  Serial.print("CPU Frequenz: ");
+  Serial.print(getCpuFrequencyMhz());
+  Serial.println(" MHz");
+}
+
+void loop() {
+  // Messwerte auslesen
+  float temp = dht.readTemperature();
+  float hum = dht.readHumidity();
+  
+  // Prüfen ob Messung erfolgreich
+  if (isnan(temp) || isnan(hum)) {
+    Serial.println("Fehler beim Auslesen des DHT22!");
+    lcd.setCursor(0, 0);
+    lcd.print("Sensor Fehler!  ");
+    lcd.setCursor(0, 1);
+    lcd.print("                ");
+  } else {
+    // Serial Monitor Ausgabe
+    Serial.print("Temperatur: ");
+    Serial.print(temp);
+    Serial.print(" °C  Luftfeuchte: ");
+    Serial.print(hum);
+    Serial.println(" %");
+    
+    // LCD Zeile 1: Temperatur
+    lcd.setCursor(0, 0);
+    lcd.print("Temp: ");
+    lcd.print(temp, 1); 
+    lcd.print(" ");
+    lcd.write(0xDF);     
+    lcd.print("C  ");
+    
+    // LCD Zeile 2: Luftfeuchtigkeit
+    lcd.setCursor(0, 1);
+    lcd.print("Feuchte: ");
+    lcd.print(hum, 1);   
+    lcd.print(" %  ");
+  }
+  
+  // Light Sleep für 15 Sekunden
+  // Display bleibt an, I2C bleibt aktiv, spart ~50% Energie
+  Serial.println("Gehe in Light Sleep...");
+  Serial.flush();
+  
+  esp_sleep_enable_timer_wakeup(UPDATE_INTERVAL * 1000000ULL);
+  esp_light_sleep_start();
+  
+  Serial.println("Aufgewacht aus Light Sleep!");
+}
