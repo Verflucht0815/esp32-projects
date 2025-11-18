@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorials - NPC0815</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <div class="logo">
+                    <h1>NPC0815 Arduino & ESP32 Projekte</h1>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#stats">Stats</a></li>
+                    <li><a href="index.html#projects">Projekte</a></li>
+                    <li><a href="tutorials.html">Tutorials</a></li>
+                    <li><a href="index.html#faq">FAQ</a></li>
+                    <li><a href="index.html#contact">Kontakt</a></li>
+                </ul>
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark Mode">
+                    <span class="sun">☀️</span>
+                    <span class="moon">🌙</span>
+                </button>
+                <div class="burger">
+                    <div class="line1"></div>
+                    <div class="line2"></div>
+                    <div class="line3"></div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero" style="min-height: 50vh;">
+        <div class="container">
+            <div class="hero-content fade-in">
+                <h2>Tutorials & Ressourcen</h2>
+                <p>Alles was du brauchst, um mit Arduino und ESP32 durchzustarten</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projekt Tutorials -->
+    <section id="projekte" class="tutorials-content">
+        <div class="container">
+            <h2 class="section-title">🛠️ Projekt Tutorials</h2>
+            <div class="tutorial-list">
+                <div class="tutorial-item fade-in">
+                    <h3>Thermo/Hygrometer mit ESP32</h3>
+                    <p><strong>Schwierigkeit:</strong> 🟡 Mittel | <strong>Zeit:</strong> 2-3h | <strong>Kosten:</strong> ~25€</p>
+                    <h4>Benötigte Bauteile:</h4>
+                    <ul>
+                        <li>ESP32 DevKit V1</li>
+                        <li>DHT22 Temperatur- und Luftfeuchtigkeitssensor</li>
+                        <li>16x2 I2C LCD Display</li>
+                        <li>Breadboard & Jumperkabel</li>
+                        <li>USB-Kabel (Micro USB)</li>
+                    </ul>
+                    <h4>Schritt-für-Schritt Anleitung:</h4>
+                    <ol>
+                        <li>DHT22 Library in Arduino IDE installieren</li>
+                        <li>LCD I2C Library installieren</li>
+                        <li>Hardware nach Schaltplan verbinden</li>
+                        <li>Code hochladen und testen</li>
+                    </ol>
+                    <a href="https://github.com/Verflucht0815/esp32-projects" target="_blank" class="project-badge">Zum vollständigen Tutorial</a>
+                </div>
+
+                <div class="tutorial-item fade-in">
+                    <h3>LED Blink - Dein erstes Projekt</h3>
+                    <p><strong>Schwierigkeit:</strong> 🟢 Anfänger | <strong>Zeit:</strong> 30min | <strong>Kosten:</strong> ~10€</p>
+                    <h4>Lernziele:</h4>
+                    <ul>
+                        <li>Grundlagen der Arduino IDE</li>
+                        <li>Digitale Pins verstehen</li>
+                        <li>Erste Programmierung</li>
+                    </ul>
+                    <a href="#" class="project-badge disabled">Bald verfügbar</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bauteile Guide -->
+    <section id="bauteile" class="tutorials-content" style="background: var(--card-bg);">
+        <div class="container">
+            <h2 class="section-title">🔧 Bauteile Guide</h2>
+            <div class="components-grid">
+                <div class="component-card fade-in">
+                    <h3>Widerstände</h3>
+                    <p><strong>Funktion:</strong> Begrenzung des Stromflusses</p>
+                    <p><strong>Typische Werte:</strong> 220Ω, 1kΩ, 10kΩ</p>
+                    <p><strong>Verwendung:</strong> LED-Vorwiderstände, Pull-up/Pull-down</p>
+                    <p><strong>Farbcode-Rechner:</strong> 🔴🔴🔴 = 220Ω</p>
+                </div>
+
+                <div class="component-card fade-in">
+                    <h3>LEDs</h3>
+                    <p><strong>Funktion:</strong> Licht-Ausgabe</p>
+                    <p><strong>Spannung:</strong> 2-3.3V</p>
+                    <p><strong>Wichtig:</strong> Immer mit Vorwiderstand verwenden!</p>
+                    <p><strong>Polarität:</strong> Langes Bein = Plus (+)</p>
+                </div>
+
+                <div class="component-card fade-in">
+                    <h3>Sensoren (DHT22)</h3>
+                    <p><strong>Funktion:</strong> Temperatur & Luftfeuchtigkeit messen</p>
+                    <p><strong>Spannung:</strong> 3.3-5V</p>
+                    <p><strong>Genauigkeit:</strong> ±0.5°C, ±2% RH</p>
+                    <p><strong>Interface:</strong> 1-Wire Digital</p>
+                </div>
+
+                <div class="component-card fade-in">
+                    <h3>Breadboard</h3>
+                    <p><strong>Funktion:</strong> Lötfreies Prototyping</p>
+                    <p><strong>Aufbau:</strong> Horizontal verbundene Reihen</p>
+                    <p><strong>Power-Rails:</strong> + und - vertikal verbunden</p>
+                    <p><strong>Tipp:</strong> Verwende verschiedene Kabelfarben!</p>
+                </div>
+
+                <div class="component-card fade-in">
+                    <h3>Transistoren</h3>
+                    <p><strong>Funktion:</strong> Elektronischer Schalter</p>
+                    <p><strong>Typen:</strong> NPN (z.B. 2N2222), PNP</p>
+                    <p><strong>Verwendung:</strong> Motoren, Relais steuern</p>
+                    <p><strong>Pins:</strong> Basis, Kollektor, Emitter</p>
+                </div>
+
+                <div class="component-card fade-in">
+                    <h3>Kondensatoren</h3>
+                    <p><strong>Funktion:</strong> Energie speichern, Signale glätten</p>
+                    <p><strong>Typen:</strong> Keramik, Elektrolyt</p>
+                    <p><strong>Werte:</strong> 100nF, 10µF, 100µF</p>
+                    <p><strong>Achtung:</strong> Elektrolyt-Kondensatoren haben Polarität!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Wissenswertes -->
+    <section id="wissen" class="tutorials-content">
+        <div class="container">
+            <h2 class="section-title">📚 Wissenswertes</h2>
+            <div class="knowledge-grid">
+                <div class="knowledge-card fade-in">
+                    <h3>🔌 Grundlagen der Elektronik</h3>
+                    <ul>
+                        <li><strong>Spannung (V):</strong> "Elektrischer Druck" - gemessen in Volt</li>
+                        <li><strong>Strom (A):</strong> Fließende Ladung - gemessen in Ampere</li>
+                        <li><strong>Widerstand (Ω):</strong> Hemmung des Stromflusses - gemessen in Ohm</li>
+                        <li><strong>Ohmsches Gesetz:</strong> U = R × I</li>
+                    </ul>
+                </div>
+
+                <div class="knowledge-card fade-in">
+                    <h3>💻 Programmier-Basics</h3>
+                    <ul>
+                        <li><strong>Setup():</strong> Wird einmal beim Start ausgeführt</li>
+                        <li><strong>Loop():</strong> Wird endlos wiederholt</li>
+                        <li><strong>digitalWrite():</strong> Pin auf HIGH oder LOW setzen</li>
+                        <li><strong>delay():</strong> Pause in Millisekunden</li>
+                    </ul>
+                </div>
+
+                <div class="knowledge-card fade-in">
+                    <h3>🛠️ Debugging-Tipps</h3>
+                    <ul>
+                        <li><strong>Serial Monitor:</strong> Nutze Serial.println() zum Debuggen</li>
+                        <li><strong>Verkabelung prüfen:</strong> 90% der Fehler liegen hier!</li>
+                        <li><strong>LED-Test:</strong> Teste einzelne Komponenten isoliert</li>
+                        <li><strong>Spannung messen:</strong> Multimeter ist dein Freund!</li>
+                    </ul>
+                </div>
+
+                <div class="knowledge-card fade-in">
+                    <h3>⚡ ESP32 vs Arduino</h3>
+                    <ul>
+                        <li><strong>ESP32:</strong> WiFi, Bluetooth, mehr Power (240MHz)</li>
+                        <li><strong>Arduino Uno:</strong> Einfacher für Anfänger (16MHz)</li>
+                        <li><strong>Pins:</strong> ESP32 hat mehr GPIOs (30+ vs 14)</li>
+                        <li><strong>Spannung:</strong> ESP32 = 3.3V, Arduino = 5V!</li>
+                    </ul>
+                </div>
+
+                <div class="knowledge-card fade-in">
+                    <h3>🔒 Sicherheits-Tipps</h3>
+                    <ul>
+                        <li><strong>Nie ohne Vorwiderstand:</strong> LEDs brauchen einen Widerstand!</li>
+                        <li><strong>Polarität beachten:</strong> Besonders bei Kondensatoren</li>
+                        <li><strong>Kurzschlüsse vermeiden:</strong> Prüfe Verkabelung doppelt</li>
+                        <li><strong>Stromversorgung:</strong> Nicht mehr als 40mA pro Pin!</li>
+                    </ul>
+                </div>
+
+                <div class="knowledge-card fade-in">
+                    <h3>🌐 Wichtige Protokolle</h3>
+                    <ul>
+                        <li><strong>I2C:</strong> Zwei Leitungen (SDA, SCL) für mehrere Geräte</li>
+                        <li><strong>SPI:</strong> Schneller als I2C, mehr Leitungen</li>
+                        <li><strong>UART:</strong> Serielle Kommunikation (TX, RX)</li>
+                        <li><strong>WiFi/MQTT:</strong> IoT-Kommunikation für ESP32</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools & Software -->
+    <section id="tools" class="tutorials-content" style="background: var(--card-bg);">
+        <div class="container">
+            <h2 class="section-title">⚙️ Tools & Software</h2>
+            <div class="tools-list">
+                <div class="tool-item fade-in">
+                    <h3>📱 Arduino IDE</h3>
+                    <p><strong>Download:</strong> <a href="https://www.arduino.cc/en/software" target="_blank">arduino.cc</a></p>
+                    <p>Die Standard-Entwicklungsumgebung für Arduino und ESP32</p>
+                    <h4>Wichtige Einstellungen:</h4>
+                    <ul>
+                        <li>Board Manager: ESP32 hinzufügen</li>
+                        <li>Board auswählen: "ESP32 Dev Module"</li>
+                        <li>Port auswählen: COM Port (Windows) oder /dev/tty* (Mac/Linux)</li>
+                    </ul>
+                </div>
+
+                <div class="tool-item fade-in">
+                    <h3>📚 Wichtige Libraries</h3>
+                    <ul>
+                        <li><strong>DHT sensor library:</strong> Für DHT11/DHT22 Sensoren</li>
+                        <li><strong>LiquidCrystal I2C:</strong> Für I2C LCD Displays</li>
+                        <li><strong>WiFi.h:</strong> WiFi-Verbindung (ESP32 built-in)</li>
+                        <li><strong>PubSubClient:</strong> MQTT für IoT-Projekte</li>
+                        <li><strong>ArduinoJSON:</strong> JSON Parsing</li>
+                    </ul>
+                    <p><em>Installation: Sketch → Include Library → Manage Libraries</em></p>
+                </div>
+
+                <div class="tool-item fade-in">
+                    <h3>🎨 Fritzing</h3>
+                    <p><strong>Download:</strong> <a href="https://fritzing.org" target="_blank">fritzing.org</a></p>
+                    <p>Erstelle Schaltpläne und Breadboard-Layouts visuell</p>
+                </div>
+
+                <div class="tool-item fade-in">
+                    <h3>📊 Serial Monitor Tools</h3>
+                    <ul>
+                        <li><strong>Arduino Serial Monitor:</strong> Built-in, einfach</li>
+                        <li><strong>PuTTY:</strong> Erweiterte serielle Kommunikation</li>
+                        <li><strong>CoolTerm:</strong> Multi-Plattform Serial Monitor</li>
+                    </ul>
+                </div>
+
+                <div class="tool-item fade-in">
+                    <h3>🛒 Empfohlene Shops</h3>
+                    <ul>
+                        <li><strong>Amazon:</strong> Schnelle Lieferung, höhere Preise</li>
+                        <li><strong>AliExpress:</strong> Günstig, längere Lieferzeit (2-4 Wochen)</li>
+                        <li><strong>Reichelt/Conrad:</strong> Deutsch, guter Support</li>
+                        <li><strong>Mouser/DigiKey:</strong> Professionell, große Auswahl</li>
+                    </ul>
+                </div>
+
+                <div class="tool-item fade-in">
+                    <h3>📖 Lern-Ressourcen</h3>
+                    <ul>
+                        <li><strong>Arduino Documentation:</strong> <a href="https://www.arduino.cc/reference" target="_blank">arduino.cc/reference</a></li>
+                        <li><strong>ESP32 Docs:</strong> <a href="https://docs.espressif.com" target="_blank">docs.espressif.com</a></li>
+                        <li><strong>Random Nerd Tutorials:</strong> Exzellente ESP32 Tutorials</li>
+                        <li><strong>Adafruit Learn:</strong> Anfängerfreundlich</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 NPC0815 | Arduino & ESP32 Projects | <a href="https://github.com/Verflucht0815/esp32-projects" target="_blank">View on GitHub</a></p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
