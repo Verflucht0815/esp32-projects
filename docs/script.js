@@ -71,41 +71,63 @@ document.querySelectorAll('.fade-in').forEach(el => {
     observer.observe(el);
 });
 
-// Animated Counter for Stats
-const animateCounter = (element) => {
-    const target = parseInt(element.dataset.target);
-    const duration = 2000;
-    const increment = target / (duration / 16);
-    let current = 0;
-
-    const updateCounter = () => {
-        current += increment;
-        if (current < target) {
-            element.textContent = Math.floor(current);
-            requestAnimationFrame(updateCounter);
-        } else {
-            element.textContent = target;
+// Animated Counter for Stats - Real GitHub Data
+const fetchGitHubStats = async () => {
+    try {
+        const response = await fetch('https://api.github.com/repos/Verflucht0815/esp32-projects');
+        
+        if (!response.ok) {
+            throw new Error('API nicht erreichbar');
         }
-    };
-
-    updateCounter();
+        
+        const data = await response.json();
+        
+        // Update stats with real data
+        document.getElementById('github-stars').textContent = data.stargazers_count || 0;
+        document.getElementById('github-forks').textContent = data.forks_count || 0;
+        document.getElementById('github-watchers').textContent = data.subscribers_count || 0;
+        document.getElementById('github-issues').textContent = data.open_issues_count || 0;
+        
+        // Add animation
+        document.querySelectorAll('.stat-number').forEach(stat => {
+            stat.style.animation = 'fadeIn 0.5s ease';
+        });
+    } catch (error) {
+        console.error('Fehler beim Laden der GitHub Stats:', error);
+        
+        // Option 1: Stats Section ausblenden
+        const statsSection = document.querySelector('.stats-section');
+        if (statsSection) {
+            statsSection.style.display = 'none';
+        }
+        
+        // Option 2: Fallback-Nachricht anzeigen (auskommentiert)
+        // document.querySelectorAll('.stat-number').forEach(stat => {
+        //     stat.textContent = '-';
+        //     stat.style.fontSize = '1.5rem';
+        // });
+        // const statsGrid = document.querySelector('.stats-grid');
+        // const errorMsg = document.createElement('p');
+        // errorMsg.textContent = 'Stats momentan nicht verfügbar';
+        // errorMsg.style.cssText = 'text-align: center; color: var(--text-secondary); grid-column: 1 / -1;';
+        // statsGrid.appendChild(errorMsg);
+    }
 };
 
+// Load GitHub stats when stats section is visible
 const statObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            const counter = entry.target.querySelector('.stat-number');
-            if (counter && !counter.classList.contains('animated')) {
-                counter.classList.add('animated');
-                animateCounter(counter);
-            }
+            fetchGitHubStats();
+            statObserver.unobserve(entry.target);
         }
     });
 }, { threshold: 0.5 });
 
-document.querySelectorAll('.stat-card').forEach(card => {
-    statObserver.observe(card);
-});
+const statsSection = document.querySelector('.stats-section');
+if (statsSection) {
+    statObserver.observe(statsSection);
+}
 
 // Dark/Light Mode Toggle
 const themeToggle = document.getElementById('theme-toggle');
@@ -225,29 +247,6 @@ faqItems.forEach(item => {
             item.classList.add('active');
         }
     });
-});
-
-// View Counter (simulated)
-const viewCounters = document.querySelectorAll('.view-count');
-viewCounters.forEach(counter => {
-    const currentCount = parseInt(counter.textContent);
-    const viewObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && !counter.classList.contains('counted')) {
-                counter.classList.add('counted');
-                // Simulate view increment
-                counter.textContent = currentCount + 1;
-                
-                // Store in localStorage (optional)
-                const projectTitle = entry.target.closest('.project-card').querySelector('h3').textContent;
-                const storageKey = 'views_' + projectTitle.replace(/\s+/g, '_');
-                const storedViews = localStorage.getItem(storageKey) || currentCount;
-                localStorage.setItem(storageKey, parseInt(storedViews) + 1);
-            }
-        });
-    }, { threshold: 0.5 });
-    
-    viewObserver.observe(counter.closest('.project-card'));
 });
 
 // Project Rating Click (optional interactivity)
