@@ -1,85 +1,270 @@
 #include <Wire.h>
-#include <LiquidCrystal_I2C.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 #include <DHT.h>
 
-// Config
-#define DHTPIN 4        
-#define DHTTYPE DHT22   
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 32
+#define OLED_RESET -1
+#define SCREEN_ADDRESS 0x3C
+
+// I2C Pins für ESP32-C3 Super Mini
+#define SDA_PIN 10
+#define SCL_PIN 8
+
+// DHT22 Pin
+#define DHTPIN 4
+#define DHTTYPE DHT22
+
+// Taster Pin
+#define BUTTON_PIN 9
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 DHT dht(DHTPIN, DHTTYPE);
 
-// LCD Config (I2C Adresse meistens 0x27 oder 0x3F)
-LiquidCrystal_I2C lcd(0x27, 16, 2);
+int autoMode = 0;  // 0 = Uhrzeit, 1 = Temp, 2 = Luftf
+int manualMode = -1;  // -1 = Auto, 0-2 = Manuell gewählt
+unsigned long lastButtonPress = 0;
+unsigned long manualModeStart = 0;
+bool lastButtonState = HIGH;
+bool inManualMode = false;
 
-// Update-Intervall in Sekunden jetz 15 Sekundden
-#define UPDATE_INTERVAL 15
+// Manuelle Zeiteinstellung - HIER ANPASSEN!
+int hours = 21;
+int minutes = 53;
+int seconds = 0;
+
+int day = 30;
+int month = 12;
+int year = 2025;
+
+unsigned long lastMillis = 0;
+unsigned long lastAutoSwitch = 0;
+
+// Scroll-Animation Variablen
+int scrollOffset = 0;
+bool isScrolling = false;
+int currentDisplayMode = 0;
+int nextDisplayMode = 0;
 
 void setup() {
   Serial.begin(115200);
+  delay(1000);
   
-  // CPU-Frequenz reduzieren für weniger Wärme (optional)
-  setCpuFrequencyMhz(80);  // Von 240MHz auf 80MHz
-  
-  // Initialisieren
+  Wire.begin(SDA_PIN, SCL_PIN);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
   dht.begin();
-  lcd.init();
-  lcd.backlight();
   
-  // Startmeldung
-  lcd.setCursor(0, 0);
-  lcd.print("Thermo-Hygro");
-  lcd.setCursor(0, 1);
-  lcd.print("Meter ESP32");
+  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+    Serial.println("SSD1306 nicht gefunden!");
+    for(;;);
+  }
+  
+  display.clearDisplay();
+  display.setTextColor(SSD1306_WHITE);
+  display.setTextSize(1);
+  display.setCursor(20, 12);
+  display.println("System startet");
+  display.display();
   delay(2000);
-  lcd.clear();
   
-  Serial.println("ESP32 Thermo-Hygrometer gestartet");
-  Serial.print("CPU Frequenz: ");
-  Serial.print(getCpuFrequencyMhz());
-  Serial.println(" MHz");
+  lastMillis = millis();
+  lastAutoSwitch = millis();
+  currentDisplayMode = 0;
+}
+
+void drawFrame() {
+  display.drawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SSD1306_WHITE);
+  display.drawRect(1, 1, SCREEN_WIDTH-2, SCREEN_HEIGHT-2, SSD1306_WHITE);
+  display.fillRect(0, 0, 4, 4, SSD1306_WHITE);
+  display.fillRect(SCREEN_WIDTH-4, 0, 4, 4, SSD1306_WHITE);
+  display.fillRect(0, SCREEN_HEIGHT-4, 4, 4, SSD1306_WHITE);
+  display.fillRect(SCREEN_WIDTH-4, SCREEN_HEIGHT-4, 4, 4, SSD1306_WHITE);
+}
+
+void updateTime() {
+  if (millis() - lastMillis >= 1000) {
+    lastMillis += 1000;
+    seconds++;
+    
+    if (seconds >= 60) {
+      seconds = 0;
+      minutes++;
+      
+      if (minutes >= 60) {
+        minutes = 0;
+        hours++;
+        
+        if (hours >= 24) {
+          hours = 0;
+          day++;
+          
+          int daysInMonth = 31;
+          if (month == 4 || month == 6 || month == 9 || month == 11) {
+            daysInMonth = 30;
+          } else if (month == 2) {
+            daysInMonth = 28;
+          }
+          
+          if (day > daysInMonth) {
+            day = 1;
+            month++;
+            
+            if (month > 12) {
+              month = 1;
+              year++;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+void getDisplayText(int mode, char* buffer, char* subBuffer) {
+  if (mode == 0) {
+    // Uhrzeit im 12-Stunden Format
+    int displayHours = hours;
+    bool isPM = false;
+    
+    if (displayHours >= 12) {
+      isPM = true;
+      if (displayHours > 12) {
+        displayHours -= 12;
+      }
+    }
+    if (displayHours == 0) {
+      displayHours = 12;
+    }
+    
+    sprintf(buffer, "%2d:%02d%s", displayHours, minutes, isPM ? "PM" : "AM");
+    sprintf(subBuffer, "%02d.%02d.%04d", day, month, year);
+  } else if (mode == 1) {
+    float temp = dht.readTemperature();
+    if (!isnan(temp)) {
+      sprintf(buffer, "%.1fC", temp);
+    } else {
+      sprintf(buffer, "ERR");
+    }
+    sprintf(subBuffer, "Temp");
+  } else if (mode == 2) {
+    float humidity = dht.readHumidity();
+    if (!isnan(humidity)) {
+      sprintf(buffer, "%.1f%%", humidity);
+    } else {
+      sprintf(buffer, "ERR");
+    }
+    sprintf(subBuffer, "Feuchte");
+  }
+}
+
+void drawTextCentered(const char* text, int yOffset, const char* subText) {
+  display.setTextSize(2);
+  int textWidth = strlen(text) * 6 * 2;
+  int x = (SCREEN_WIDTH - textWidth) / 2;
+  display.setCursor(x, yOffset);
+  display.print(text);
+  
+  // Untertitel
+  if (subText != NULL && strlen(subText) > 0) {
+    display.setTextSize(1);
+    int subWidth = strlen(subText) * 6;
+    int subX = (SCREEN_WIDTH - subWidth) / 2;
+    display.setCursor(subX, yOffset + 18);
+    display.print(subText);
+  }
 }
 
 void loop() {
-  // Messwerte auslesen
-  float temp = dht.readTemperature();
-  float hum = dht.readHumidity();
+  updateTime();
   
-  // Prüfen ob Messung erfolgreich
-  if (isnan(temp) || isnan(hum)) {
-    Serial.println("Fehler beim Auslesen des DHT22!");
-    lcd.setCursor(0, 0);
-    lcd.print("Sensor Fehler!  ");
-    lcd.setCursor(0, 1);
-    lcd.print("                ");
-  } else {
-    // Serial Monitor Ausgabe
-    Serial.print("Temperatur: ");
-    Serial.print(temp);
-    Serial.print(" °C  Luftfeuchte: ");
-    Serial.print(hum);
-    Serial.println(" %");
+  // Taster auslesen
+  bool buttonState = digitalRead(BUTTON_PIN);
+  if (buttonState == LOW && lastButtonState == HIGH && millis() - lastButtonPress > 300) {
+    lastButtonPress = millis();
     
-    // LCD Zeile 1: Temperatur
-    lcd.setCursor(0, 0);
-    lcd.print("Temp: ");
-    lcd.print(temp, 1); 
-    lcd.print(" ");
-    lcd.write(0xDF);     
-    lcd.print("C  ");
-    
-    // LCD Zeile 2: Luftfeuchtigkeit
-    lcd.setCursor(0, 1);
-    lcd.print("Feuchte: ");
-    lcd.print(hum, 1);   
-    lcd.print(" %  ");
+    if (!inManualMode) {
+      // Erster Knopfdruck: Wechsel zu manuellem Modus
+      manualMode = (currentDisplayMode + 1) % 3;
+      inManualMode = true;
+      manualModeStart = millis();
+      
+      // Scroll-Animation starten
+      isScrolling = true;
+      scrollOffset = 0;
+      nextDisplayMode = manualMode;
+    } else {
+      // Weiterer Knopfdruck im manuellen Modus
+      manualMode = (manualMode + 1) % 3;
+      manualModeStart = millis();
+      
+      // Scroll-Animation starten
+      isScrolling = true;
+      scrollOffset = 0;
+      nextDisplayMode = manualMode;
+    }
+  }
+  lastButtonState = buttonState;
+  
+  // Prüfen ob manuelle Anzeige abgelaufen ist
+  if (inManualMode && millis() - manualModeStart > 5000) {
+    inManualMode = false;
+    // Zurück zum Auto-Modus mit Animation
+    isScrolling = true;
+    scrollOffset = 0;
+    nextDisplayMode = autoMode;
   }
   
-  // Light Sleep für 15 Sekunden
-  // Display bleibt an, I2C bleibt aktiv, spart ~50% Energie
-  Serial.println("Gehe in Light Sleep...");
-  Serial.flush();
+  // Auto-Modus: Alle 3.5 Sekunden wechseln
+  if (!inManualMode && millis() - lastAutoSwitch > 3500) {
+    lastAutoSwitch = millis();
+    autoMode = (autoMode + 1) % 3;
+    
+    // Scroll-Animation starten
+    isScrolling = true;
+    scrollOffset = 0;
+    nextDisplayMode = autoMode;
+  }
   
-  esp_sleep_enable_timer_wakeup(UPDATE_INTERVAL * 1000000ULL);
-  esp_light_sleep_start();
+  display.clearDisplay();
+  drawFrame();
   
-  Serial.println("Aufgewacht aus Light Sleep!");
+  if (isScrolling) {
+    // Scroll-Animation
+    scrollOffset += 2;  // Scroll-Geschwindigkeit
+    
+    char currentText[16];
+    char nextText[16];
+    char currentSub[20];
+    char nextSub[20];
+    getDisplayText(currentDisplayMode, currentText, currentSub);
+    getDisplayText(nextDisplayMode, nextText, nextSub);
+    
+    // Aktueller Text scrollt nach oben
+    int currentY = 6 - scrollOffset;
+    drawTextCentered(currentText, currentY, currentSub);
+    
+    // Neuer Text kommt von unten (startet bei 3/4 Weg = 18 Pixel)
+    if (scrollOffset >= 18) {
+      int nextY = 50 - scrollOffset;
+      drawTextCentered(nextText, nextY, nextSub);
+    }
+    
+    // Animation beenden wenn neuer Text an Position 6 ist
+    if (scrollOffset >= 44) {
+      isScrolling = false;
+      scrollOffset = 0;
+      currentDisplayMode = nextDisplayMode;
+    }
+  } else {
+    
+    char text[16];
+    char subText[20];
+    int displayMode = inManualMode ? manualMode : autoMode;
+    getDisplayText(displayMode, text, subText);
+    drawTextCentered(text, 6, subText);
+  }
+  
+  display.display();
+  delay(20);  // Flüssigere Animation
 }
