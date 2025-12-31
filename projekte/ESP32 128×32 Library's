@@ -1,0 +1,47 @@
+Tutorial: Libraries für 128x32 OLED Display installieren
+
+
+Schritt 1: Arduino IDE öffnen
+
+Starte die Arduino IDE auf deinem Computer.
+
+
+
+Schritt 2: Library Manager öffnen
+
+Gehe zu: Sketch → Include Library → Manage Libraries...
+Oder nutze die Tastenkombination: Strg + Shift + I
+
+
+
+Schritt 3: Adafruit SSD1306 installieren
+
+Im Suchfeld oben gibst du ein: Adafruit SSD1306
+Finde die Library "Adafruit SSD1306" von Adafruit
+Klicke auf Install
+
+Wenn ein Fenster erscheint mit "Install all dependencies?" → Klicke auf Install all
+
+
+
+Schritt 4: Adafruit GFX installieren (falls nicht automatisch installiert)
+
+Im Suchfeld gibst du ein: Adafruit GFX
+Finde die Library "Adafruit GFX Library" von Adafruit
+Klicke auf Install
+
+
+
+Schritt 5: Überprüfen
+
+Nach der Installation kannst du überprüfen, ob alles funktioniert:
+Gehe zu File → Examples → Adafruit SSD1306
+
+Öffne ein Beispiel wie ssd1306_128x32_i2c
+Wenn du die Beispiele siehst, ist alles korrekt installiert! (Alternativ, einfach den code laden)
+Fertig! ✓
+
+Du hast jetzt alle benötigten Libraries installiert:
+✓ Adafruit SSD1306
+✓ Adafruit GFX Library
+✓ Wire (bereits vorinstalliert)
