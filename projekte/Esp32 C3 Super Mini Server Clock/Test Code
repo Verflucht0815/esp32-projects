@@ -1,0 +1,216 @@
+/*  two servo real time clock - ESP32-C3 Version
+ *  adapted for ESP32-C3 Super Mini
+ *  original by ceptimus April 2022
+ *
+ *  gets time via internet
+ *  drives two servos: GPIO2 (minute hand), GPIO3 (hour hand)
+ *  servos only need to travel about +/- 68.8 degrees from centre, because there is 34:13 step-up gearing between the servos and the clock hands.
+ *  GPIO4 pull low to drive servos to mid position (for setup)
+ *  GPIO5 pull low to drive servos anti-clockwise to 12 o'clock (for setup)
+ *  GPIO6 pull low to drive servos clockwise to 12 o'clock (for setup)
+ */
+ 
+#include <WiFi.h>
+#include <WiFiMulti.h>
+#include <time.h>
+#include <ESP32Servo.h>
+
+#include "config.h" // WiFi connection details and time server/timezone set up  ***EDIT THIS FILE PUTTING IN YOUR WIFI DETAILS AND TIMEZONE***
+
+// minute hand servo on GPIO 2
+#define MINUTE_HAND_SERVO 2
+// hour hand servo on GPIO 3
+#define HOUR_HAND_SERVO 3
+
+// Setup pins
+#define SETUP_MID_PIN 4      // short to ground to setup servos mid position
+#define SETUP_CCW_PIN 5      // short to ground to measure anticlockwise twelve o'clock position
+#define SETUP_CW_PIN 6       // short to ground to measure servos clockwise twelve o'clock position
+
+// LED pin (typically GPIO8 on ESP32-C3 Super Mini)
+#define LED_BUILTIN 8
+
+// servo 'driven' time, in milliseconds - servos spend most of the time NOT receiving any pulses, so reducing current draw and wear
+#define SERVO_ACTIVE_MS 1000
+
+// next four defines specify servo travel from centre (1500) in microseconds, and direction.  Adjust/reverse these so that the two hands drive exactly one revolution from 12 to 12 clockwise during the start-up test.
+// settings below were correct for Tower Pro SG90 servos. The REVERSE definitions should be the same (both true or both false), unless (strangely) you have mismatched servos: one forward and one reverse rotation.
+// if you find that a hand hand actually rotates X minutes instead of the desired 60, then multiply the TRAVEL constant by 60/X; recompile, upload, and try again.
+#define MINUTE_TRAVEL 755
+#define MINUTE_REVERSE false
+#define HOUR_TRAVEL 726
+#define HOUR_REVERSE false
+
+// interval for checking time and printing to Serial port (in milliseconds).  Builtin LED is on/off for this time (except when moving a servo) so this is half the blink period
+#define UPDATE_INTERVAL 1000
+
+WiFiMulti wifiMulti;
+
+Servo minuteHand;
+Servo hourHand;
+
+void setup(void){  
+  Serial.begin(115200);
+  Serial.println("\nESP32-C3 Servo Clock Starting...");
+  
+  // Initialize servo library
+  ESP32PWM::allocateTimer(0);
+  ESP32PWM::allocateTimer(1);
+  minuteHand.setPeriodHertz(50);    // standard 50 hz servo
+  hourHand.setPeriodHertz(50);
+  
+  // Setup pins with internal pullup
+  pinMode(SETUP_MID_PIN, INPUT_PULLUP);
+  pinMode(SETUP_CCW_PIN, INPUT_PULLUP);
+  pinMode(SETUP_CW_PIN, INPUT_PULLUP);
+  
+  // LED setup
+  pinMode(LED_BUILTIN, OUTPUT);
+  
+  // WiFi setup
+  WiFi.mode(WIFI_STA);
+  wifiMulti.addAP(WIFI_SSID, WIFI_PASSWORD);
+  
+  Serial.println("Connecting to WiFi...");
+  // Wait for connection
+  while (wifiMulti.run() != WL_CONNECTED) {
+    toggleLED();
+    delay(500);
+    Serial.print(".");
+  }
+  
+  Serial.println("\nWiFi connected!");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  // Configure time
+  configTime(0, 0, NTP_TIME_SERVERS);
+  setenv("TZ", TIME_ZONE_SETTINGS, 1);
+  tzset();
+  
+  Serial.println("Waiting for time sync...");
+  struct tm timeinfo;
+  int retry = 0;
+  while (!getLocalTime(&timeinfo) && retry < 20) {
+    toggleLED();
+    delay(500);
+    Serial.print(".");
+    retry++;
+  }
+  
+  if (retry >= 20) {
+    Serial.println("\nFailed to obtain time!");
+  } else {
+    Serial.println("\nTime synchronized!");
+    Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+  }
+}
+
+void loop(void) {
+  static int prevMinute = -1;  // minute is calculated below, and when it changes, the servo is moved.  -1 forces a change on the first pass
+  static int prevHour = -1; // similarly for hour.
+    
+  static int32_t msToNextUpdate = 0L;
+  static uint32_t prevMillis = millis();
+  uint32_t ms = millis();
+  uint32_t elapsed = ms - prevMillis;
+  prevMillis = ms;
+  msToNextUpdate -= elapsed;
+  
+  if (digitalRead(SETUP_MID_PIN) == LOW) { // set servos to mid-position to allow initial positioning of gears at mid position, and hands pointing to '6'
+    Serial.println("Setup: Mid position (30)");
+    positionMinuteHand(30);
+    positionHourHand(30);
+    prevMinute = prevHour = -1; // force setting of both hands following setting phase
+  } else if (digitalRead(SETUP_CCW_PIN) == LOW) { // set servos to 'hands fully anti-clockwise' position, to allow servo travel measurement
+    Serial.println("Setup: Counter-clockwise (0)");
+    positionMinuteHand(0);
+    positionHourHand(0);
+    prevMinute = prevHour = -1; // force setting of both hands following setting phase
+  } else if (digitalRead(SETUP_CW_PIN) == LOW) { // set servos to 'hands fully clockwise' position, to allow servo travel measurement
+    Serial.println("Setup: Clockwise (60)");
+    positionMinuteHand(60);
+    positionHourHand(60);
+    prevMinute = prevHour = -1; // force setting of both hands following setting phase
+  } else if (msToNextUpdate <= 0L) { // running normally, so get time, print to serial (for debug) toggle LED and possibly move servo(s)
+    msToNextUpdate += UPDATE_INTERVAL;
+    if (msToNextUpdate <= 0L) { // if still not positive (following one or more of the 'setting' phases)
+      msToNextUpdate = UPDATE_INTERVAL;
+    }
+    
+    toggleLED();
+    
+    struct tm timeinfo;
+    if (getLocalTime(&timeinfo)) {
+      char bufr[30];
+      strftime(bufr, 30, "%a %d %b", &timeinfo);
+      Serial.println(bufr);
+    
+      strftime(bufr, 30, "%T %Z", &timeinfo);
+    
+      char *c;
+      for (c = bufr; *c; c++) {
+        while (*c == ' ' && *(c + 1) == ' ') { // remove multiple spaces from timezone string, if present
+          char *d;
+          d = c;
+          do {
+            d++;
+            *(d - 1) = *d;
+          } while (*d);
+        }
+      }
+    
+      Serial.println(bufr);
+      Serial.println();
+      
+      int minute = timeinfo.tm_min;
+      if (minute != prevMinute) {
+        Serial.printf("Moving minute hand to: %d\n", minute);
+        positionMinuteHand(minute);
+        prevMinute = minute;
+      }
+      
+      int hour = (timeinfo.tm_hour) % 12;
+      hour = hour * 5 + (minute + 6) / 12; // hour is now not in hour units, but the 'minute position' of the hour hand from 0 to 60
+      if (hour != prevHour) {
+        Serial.printf("Moving hour hand to: %d\n", hour);
+        positionHourHand(hour);
+        prevHour = hour;
+      }
+    } else {
+      Serial.println("Failed to obtain time");
+    }
+  }
+}
+
+void toggleLED() {
+  static int LEDtoggle = HIGH;
+  digitalWrite(LED_BUILTIN, LEDtoggle);
+  LEDtoggle = LEDtoggle == HIGH ? LOW : HIGH;
+}
+
+void positionMinuteHand(int minute) { // minute is from 0 to 60
+  minuteHand.attach(MINUTE_HAND_SERVO, 500, 2500);  // attach with min/max pulse width
+  if (MINUTE_REVERSE) {
+    positionServo(minuteHand, minute, 1500 + MINUTE_TRAVEL, 1500 - MINUTE_TRAVEL);
+  } else {
+    positionServo(minuteHand, minute, 1500 - MINUTE_TRAVEL, 1500 + MINUTE_TRAVEL);    
+  }
+}
+
+void positionHourHand(int minute) { // works like minute hand, so value is in minutes, not hours
+  hourHand.attach(HOUR_HAND_SERVO, 500, 2500);  // attach with min/max pulse width
+  if (HOUR_REVERSE) {
+    positionServo(hourHand, minute, 1500 + HOUR_TRAVEL, 1500 - HOUR_TRAVEL);
+  } else {
+    positionServo(hourHand, minute, 1500 - HOUR_TRAVEL, 1500 + HOUR_TRAVEL);    
+  }
+}
+
+void positionServo(Servo servo, int minute, int minuteZero, int minuteSixty) {
+  minute = constrain(minute, 0, 60);
+  int pulseWidth = map(minute, 0, 60, minuteZero, minuteSixty);
+  servo.writeMicroseconds(pulseWidth);
+  delay(SERVO_ACTIVE_MS);
+  servo.detach();
+}
